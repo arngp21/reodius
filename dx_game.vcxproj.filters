@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="program">
+      <UniqueIdentifier>{884ce5fe-c184-4353-82a5-af23c1629c96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game">
+      <UniqueIdentifier>{73faf93d-726b-44ae-bc7b-9fef24c1ee4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\system">
+      <UniqueIdentifier>{8a788238-9649-41be-826e-7c3f8f8bc90c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\library">
+      <UniqueIdentifier>{7c942d65-0a18-4117-88ae-e80f1655e00f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\dxlib_ext">
+      <UniqueIdentifier>{2ec10bbe-233c-4600-8bfb-6dfe939ccbeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\bullet">
+      <UniqueIdentifier>{200c1b47-5f68-4b78-920d-143d806199b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\character">
+      <UniqueIdentifier>{88017718-f305-4e98-a5b9-8db5e80a92ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\gamesystem">
+      <UniqueIdentifier>{4bc93279-88ad-41fa-98b7-91902d57e551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\character\enemy">
+      <UniqueIdentifier>{5f124ad6-184a-40bf-9f79-796a19533876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\character\player">
+      <UniqueIdentifier>{3f76eef8-830c-4494-8cbc-6d1b2e73ea3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\bullet\enemybullet">
+      <UniqueIdentifier>{4c8fbfae-f471-43e5-8fc4-66a2844d3fdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\bullet\playerbullet">
+      <UniqueIdentifier>{40f928eb-8b1d-48f2-83f5-556767aad72b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\gamesystem\Scene">
+      <UniqueIdentifier>{82905727-6b82-4682-8aeb-8f341bdb53d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\game\Skill">
+      <UniqueIdentifier>{6fb39c47-6517-4076-9eba-f5628d588411}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="program\system\sys_main.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_font_texture.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_input.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_intersect.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_json.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_math.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_matrix.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_quaternion.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_util.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\library\tnl_vector.cpp">
+      <Filter>program\library</Filter>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\dxlib_ext.cpp">
+      <Filter>program\dxlib_ext</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Camera.cpp">
+      <Filter>program\game\gamesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\game_main.cpp">
+      <Filter>program\game\gamesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\GameManager.cpp">
+      <Filter>program\game\gamesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Object.cpp">
+      <Filter>program\game\gamesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\character\enemy\EnemyManager.cpp">
+      <Filter>program\game\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\character\enemy\EnemyStatus.cpp">
+      <Filter>program\game\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\character\player\Player.cpp">
+      <Filter>program\game\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\Bullet\playerbullet\BulletManager.cpp">
+      <Filter>program\game\bullet\playerbullet</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\Bullet\playerbullet\BulletStatus.cpp">
+      <Filter>program\game\bullet\playerbullet</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\Bullet\enemybullet\EnemyBullet.cpp">
+      <Filter>program\game\bullet\enemybullet</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Effect.cpp">
+      <Filter>program\game\gamesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\BackGraund.cpp">
+      <Filter>program\game\gamesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Scene\SceneManager.cpp">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Scene\BaseScene.cpp">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Scene\TitleScene.cpp">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Scene\PlayScene.cpp">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Scene\GameOverScene.cpp">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\character\enemy\Enemy.cpp">
+      <Filter>program\game\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\Bullet\playerbullet\Bullet.cpp">
+      <Filter>program\game\bullet\playerbullet</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Scene\Icon.cpp">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\character\enemy\EnemyDrop.cpp">
+      <Filter>program\game\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\skill\Skill.cpp">
+      <Filter>program\game\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\skill\SkillManager.cpp">
+      <Filter>program\game\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="program\game\gamesystem\Scene\ClearScene.cpp">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="program\library\picojson.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\stb_image.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_flyweight_map.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_font_texture.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_hierarchy_tree.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_input.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_intersect.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_json.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_link_linear.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_math.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_matrix.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_quaternion.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_sequence.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_shape.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_shared_factory.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_timer_callback.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_timer_fluct.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_using.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_util.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\library\tnl_vector.h">
+      <Filter>program\library</Filter>
+    </ClInclude>
+    <ClInclude Include="program\dxlib_ext\dxlib_ext.h">
+      <Filter>program\dxlib_ext</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Camera.h">
+      <Filter>program\game\gamesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\game_main.h">
+      <Filter>program\game\gamesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\GameManager.h">
+      <Filter>program\game\gamesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\character\enemy\EnemyManager.h">
+      <Filter>program\game\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\character\enemy\EnemyStatus.h">
+      <Filter>program\game\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\character\player\Player.h">
+      <Filter>program\game\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\Bullet\playerbullet\BulletManager.h">
+      <Filter>program\game\bullet\playerbullet</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\Bullet\playerbullet\BulletStatus.h">
+      <Filter>program\game\bullet\playerbullet</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\Bullet\enemybullet\EnemyBullet.h">
+      <Filter>program\game\bullet\enemybullet</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Effect.h">
+      <Filter>program\game\gamesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\BackGraund.h">
+      <Filter>program\game\gamesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Scene\SceneManager.h">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Scene\BaseScene.h">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Scene\TitleScene.h">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Scene\PlayScene.h">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Scene\GameOverScene.h">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\character\enemy\Enemy.h">
+      <Filter>program\game\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\Bullet\playerbullet\Bullet.h">
+      <Filter>program\game\bullet\playerbullet</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Scene\Icon.h">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\character\enemy\EnemyDrop.h">
+      <Filter>program\game\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Object.h">
+      <Filter>program\game\gamesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\skill\Skill.h">
+      <Filter>program\game\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\skill\SkillManager.h">
+      <Filter>program\game\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="program\game\gamesystem\Scene\ClearScene.h">
+      <Filter>program\game\gamesystem\Scene</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
