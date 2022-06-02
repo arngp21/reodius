@@ -5,11 +5,11 @@ class BackGraund : public Object {
 public:
 	BackGraund(tnl::Vector3 start_pos);
 
-	enum SCENEBACK {
+	enum class SCENEBACK {
 		TITLEBACK,
 		PLAYBACK,
 	};
-	SCENEBACK sceneback_ = TITLEBACK;
+	int sceneback_ = static_cast<int>(SCENEBACK::TITLEBACK);
 
 	bool startinterval = false;//チカチカさせるためのflag
 

@@ -26,4 +26,5 @@ private:
 	void Render(Camera* camera) override;
 
 	bool Move();//playerの動き(キー入力)boolにして値を返すことで押されてないときも感知できる
+	void DebugMove();//debug用の関数
 };

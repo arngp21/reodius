@@ -2,12 +2,12 @@
 #include"../../gamesystem/GameManager.h"
 
 BulletManager::BulletManager() {
-	loadBullet = tnl::LoadCsv("csv/LoadBullet.csv");
+	loadBullet = tnl::LoadCsv("csv/LoadBullet.csv");//csv‚©‚çimage‚ðŽæ“¾
 }
 
-void BulletManager::CreateBullet(const int type, const tnl::Vector3 start_pos, bulletmove desc) {
+void BulletManager::CreateBullet(const int type, const tnl::Vector3 start_pos, bulletmove desc, std::shared_ptr<Object> parent) {
 	imgname = loadBullet[type][0];
-	std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(type, start_pos, desc, imgname);
+	std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(type, start_pos, desc, imgname, parent);
 	bullets_.emplace_back(bullet);
 	bullet->initialize();
 }

@@ -14,8 +14,7 @@ Enemy::Enemy(const int type, const int pos_x, const int pos_y, const int sz_w, c
 	hp_ = hp;
 	type_ = type;
 	scor_ = scor;
-	posy_max_ = pos_.y - 60;
-	deadtype_ = BULLET_HIT_DEATH;
+	posy_max_ = pos_.y - 60;//windowの下までいかないように
 	LoadDivGraph("graphics/enemy1.png", 4, 4, 1, 75, 75, img_enemy1);
 	LoadDivGraph("graphics/enemy2.png", 4, 4, 1, 75, 60, img_enemy2);
 	LoadDivGraph("graphics/enemy3.png", 4, 4, 1, 75, 75, img_enemy3);
@@ -26,9 +25,10 @@ Enemy::Enemy(const int type, const int pos_x, const int pos_y, const int sz_w, c
 
 Enemy::~Enemy() {
 	std::shared_ptr<EnemyManager>enemymanager_ = gamemanager_->GetEnemyManager();
-	if (deadtype_ == BULLET_HIT_DEATH) {
-		DeathEffect();
-		if (type_ != static_cast<int>(EnemyMoveType::CHILD) && type_ != static_cast<int>(EnemyMoveType::CHILD2)) {
+	if (deadtype_ == static_cast<int>(DeadType::BULLET_HIT_DEATH)) {
+		DeathEffect();//エフェクト生成
+		//コインの生成
+		if (type_ != static_cast<int>(EnemyMoveType::CHILD) && type_ != static_cast<int>(EnemyMoveType::CHILD2) && type_ != static_cast<int>(EnemyMoveType::BOSS)) {
 			std::shared_ptr<EnemyDrop> en_dor = std::make_shared<EnemyDrop>(pos_);
 			enemymanager_->enemy_drops_.emplace_back(en_dor);
 			en_dor->initialize();
@@ -36,27 +36,48 @@ Enemy::~Enemy() {
 		PlaySoundMem(gamemanager_->snd_damage, DX_PLAYTYPE_BACK, true);
 		gamemanager_->scorkeep_ += scor_;
 	}
-	else if (deadtype_ == PLAYER_DEATH) {
-
+	else if (deadtype_ == static_cast<int>(DeadType::PLAYER_DEATH)) {
 	}
-	else if (deadtype_ == ENEMY_SCREEN_OUT) {
-
+	else if (deadtype_ == static_cast<int>(DeadType::ENEMY_SCREEN_OUT)) {
 	}
 }
+
+//---------------------------------effect-----------------------------------------------------
+
+void Enemy::BossEffect(float deltatime)
+{
+	tnl::Vector3 pos(1, 0, 0);
+	std::shared_ptr<EnemyManager>enemymanager = gamemanager_->GetEnemyManager();
+	time_count_ += 0.1f;
+	if (time_count_ > BOSS_EFFECT_INTERVAL) {
+		std::shared_ptr<Effect> ef = std::make_shared<Effect>(pos, pos_, static_cast<int>(EnemyMoveType::BOSS));
+		ef->init();
+		count++;
+		time_count_ = 0;
+	}
+
+	if (count > 5) {
+		is_alive_ = false;
+		gamemanager_->b_clear_change = true;
+	}
+}
+
+//-------------------------------------直進------------------------------------------------
 
 void Enemy::MoveGostrigt(EnemyMoveStateBase* state) {
 	pos_.x -= speed_;
-	if (pos_.x > (gamemanager_->camera_.pos_.x) + (gamemanager_->SCREEN_W / 4)) {
-		pos_.y++;
-	}
+	//直進。画面の４分の１で下がる
+	if (pos_.x > (gamemanager_->camera_.pos_.x) + (gamemanager_->SCREEN_W / 4)) pos_.y++;
 }
 
-void Enemy::MoveChase(EnemyMoveStateBase* state) {
-	Enemy2MoveState* move_state = static_cast<Enemy2MoveState*>(state);
+//-------------------------------------追尾-----------------------------------------------
 
+void Enemy::MoveChase(EnemyMoveStateBase* state) {
+	//playerを追う
+	Enemy2MoveState* move_state = static_cast<Enemy2MoveState*>(state);
 	pos_.x -= speed_;
 	if (pos_.x > move_state->p_pos.x) {
-		move_dir_ = move_state->p_pos - move_state->en_pos;
+		move_dir_ = move_state->p_pos - pos_;
 		move_dir_.normalize();
 		pos_ += move_dir_ * 2.5f;
 	}
@@ -65,44 +86,52 @@ void Enemy::MoveChase(EnemyMoveStateBase* state) {
 	}
 }
 
+//-----------------------------------固定砲台-----------------------------------------------
+
 void Enemy::MoveFixed(EnemyMoveStateBase* state) {
 	Enemy3MoveState* move_state = static_cast<Enemy3MoveState*>(state);
 
-	create_count_ += move_state->delta_time;
-	if (create_count_ > 1.5f) {
-		move_dir_ = move_state->p_pos - move_state->en_pos;
+	boss_create_bullet_count_ += move_state->delta_time;
+	if (boss_create_bullet_count_ > 1.5f) {
+		move_dir_ = move_state->p_pos - pos_;//playerのベクトル計算
 		move_dir_.normalize();
-		gamemanager_->enemymanager_->CreateEnemyBullet(move_state->en_pos, move_dir_);
-		create_count_ = 0;
+		gamemanager_->enemymanager_->CreateEnemyBullet(pos_, move_dir_);
+		boss_create_bullet_count_ = 0;
 	}
 }
+
+//----------------------------------上下運動--------------------------------------------------
 
 void Enemy::MoveUpanddown(EnemyMoveStateBase* state) {
 	Enemy4MoveState* move_state = static_cast<Enemy4MoveState*>(state);
 
 	pos_.x -= speed_;
-	angle += 4;
-	float a = sinf(tnl::ToRadian(angle));
+	angle_ += 4;
+	float a = sinf(tnl::ToRadian(angle_));
 	pos_.y += a * 6;
 }
+
+//----------------------------------親----------------------------------------------------------
 
 void Enemy::MoveCreateenemy(EnemyMoveStateBase* state) {
 	Enemy5MoveState* move_state = static_cast<Enemy5MoveState*>(state);
 
-	create_count_ += move_state->delta_time;
+	boss_create_bullet_count_ += move_state->delta_time;
 
-	if (create_count_ > 2.5f) {
+	if (boss_create_bullet_count_ > 2.5f) {
 		gamemanager_->enemymanager_->CreateChildEnemy(pos_.x, pos_.y, static_cast<int>(EnemyMoveType::CHILD));
-		create_count_ = 0;
+		boss_create_bullet_count_ = 0;
 	}
 }
+
+//---------------------------------止まる→動く-------------------------------------------------
 
 void Enemy::MoveAcceleration(EnemyMoveStateBase* state) {
 	Enemy6MoveState* move_state = static_cast<Enemy6MoveState*>(state);
 
-	if (move_state->p_pos.x < move_state->en_pos.x) {
+	if (move_state->p_pos.x < pos_.x) {
 		if (pos_.x < gamemanager_->camera_.pos_.x + (GameManager::SCREEN_W / 3)) {
-			move_dir_ = move_state->p_pos - move_state->en_pos;
+			move_dir_ = move_state->p_pos - pos_;
 			move_dir_.normalize();
 			pos_ += move_dir_ * 2.5f;
 			pos_.x -= speed_;
@@ -114,33 +143,38 @@ void Enemy::MoveAcceleration(EnemyMoveStateBase* state) {
 	}
 }
 
+//-------------------------------子供１--------------------------------------------
+
 void Enemy::MoveChild(EnemyMoveStateBase* state) {
 	EnemyChild* move_state = static_cast<EnemyChild*>(state);
+	std::shared_ptr<EnemyManager>enemymanager_ = gamemanager_->GetEnemyManager();
 
-	if (!is_move) {
+	if (!b_is_move) {
 		if (pos_.y > posy_max_) {
 			pos_.y -= 2;
 		}
-		else is_move = true;
+		else b_is_move = true;
 	}
 	else {
-		create_count_ += move_state->delta_time;
-		if (create_count_ > 2.0f) {
-			move_dir_ = move_state->p_pos - move_state->en_pos;
+		boss_create_bullet_count_ += move_state->delta_time;
+		if (boss_create_bullet_count_ > 2.0f) {
+			move_dir_ = move_state->p_pos - pos_;
 			move_dir_.normalize();
-			gamemanager_->enemymanager_->CreateEnemyBullet(move_state->en_pos, move_dir_);
-			create_count_ = 0;
+			enemymanager_->CreateEnemyBullet(pos_, move_dir_);
+			boss_create_bullet_count_ = 0;
 		}
 		pos_.x -= speed_;
 	}
 }
+
+//-------------------------------------子供２------------------------------------------
 
 void Enemy::MoveChild2(EnemyMoveStateBase* state) {
 	EnemyChild* move_state = static_cast<EnemyChild*>(state);
 
 	pos_.x -= speed_;
 	if (pos_.x > move_state->p_pos.x) {
-		move_dir_ = move_state->p_pos - move_state->en_pos;
+		move_dir_ = move_state->p_pos - pos_;
 		move_dir_.normalize();
 		pos_ += move_dir_ * 2.5f;
 	}
@@ -149,39 +183,58 @@ void Enemy::MoveChild2(EnemyMoveStateBase* state) {
 	}
 }
 
+//----------------------------------ボス----------------------------------------------
+
 void Enemy::MoveBoss(EnemyMoveStateBase* state) {
 	EnemyBoss* move_state = static_cast<EnemyBoss*>(state);
+	if (!gamemanager_->b_boss_dead) {
+		std::shared_ptr<EnemyManager>enemymanager_ = gamemanager_->GetEnemyManager();
 
-	if (pos_.y < gamemanager_->player_->pos_.y) {
-		pos_.y += speed_;
-	}
-	else pos_.y -= speed_;
+		//playerに合わせて上下するように
+		if (pos_.y < gamemanager_->player_->pos_.y) {
+			pos_.y += speed_;
+		}
+		else pos_.y -= speed_;
 
-	if (pos_.x < (gamemanager_->camera_.pos_.x + GameManager::SCREEN_W / 3)) {
-		gamemanager_->b_camera_stop = false;
-	}
-	int create_type = 0;
-	create_count_ += move_state->delta_time;
-	if (create_count_ > 0.7f) {
-		create_type = rand() % 4;
-		create_count_ = 0;
-		if (create_type == 1) {
-			move_dir_ = move_state->p_pos - move_state->en_pos;
+		if (pos_.x < (gamemanager_->camera_.pos_.x + GameManager::SCREEN_W / 3)) {
+			gamemanager_->b_camera_stop = false;//bossが出きったらカメラを止める
+		}
+
+		//bulletを生成
+		boss_create_bullet_count_ += move_state->delta_time;
+		if (boss_create_bullet_count_ > BOSS_CREATE_BULLET_INTERVAL_) {
+			tnl::Vector3 hoz = { 0,1,0 };
+			move_dir_ = move_state->p_pos - pos_;
 			move_dir_.normalize();
-			gamemanager_->enemymanager_->CreateEnemyBullet(move_state->en_pos, move_dir_);
+			for (int i = 30; i <= 150; i += 30) {
+				tnl::Vector3 move_ = tnl::Vector3::TransformCoord(hoz, tnl::Matrix::RotationAxis(tnl::Vector3(0, 0, 1), tnl::ToRadian(i)));
+				enemymanager_->CreateEnemyBullet(pos_, move_);
+			}
+			boss_create_bullet_count_ = 0;
 		}
-		else if (create_type == 2) {
-			gamemanager_->enemymanager_->CreateChildEnemy(pos_.x - 200, pos_.y, static_cast<int>(EnemyMoveType::CHILD));
-		}
-		else {
-			gamemanager_->enemymanager_->CreateChildEnemy(pos_.x - 200, pos_.y, static_cast<int>(EnemyMoveType::CHILD2));
+
+		//enemyを生成
+		boss_create_enemy_count_ += move_state->delta_time;
+		if (boss_create_enemy_count_ > BOSS_CREATE_ENEMY_INTERVAL_) {
+			int create_type = 0;
+			create_type = rand() % 2;
+			if (create_type == 0) {
+				enemymanager_->CreateChildEnemy(pos_.x - 200, pos_.y, static_cast<int>(EnemyMoveType::CHILD));
+			}
+			else {
+				enemymanager_->CreateChildEnemy(pos_.x - 200, pos_.y, static_cast<int>(EnemyMoveType::CHILD2));
+			}
+			boss_create_enemy_count_ = 0;
 		}
 	}
+	else BossEffect(move_state->delta_time);
 }
 
+//----------------------------------update-------------------------------------
+
 void Enemy::Update(float deltatime) {
-	if (b_ondisplay) {
-		//
+	if (b_ondisplay_) {
+		//引数クラスのプロトタイプ宣言
 		Enemy1MoveState state1;
 		Enemy2MoveState state2;
 		Enemy3MoveState state3;
@@ -191,6 +244,7 @@ void Enemy::Update(float deltatime) {
 		EnemyBoss stateboss;
 		EnemyChild stateC;
 
+		std::shared_ptr<Player> player = gamemanager_->GetPlayer();
 		switch (type_) {
 		case static_cast<int>(EnemyMoveType::GOSTRIGHT):
 			state1.delta_time = deltatime;
@@ -198,15 +252,13 @@ void Enemy::Update(float deltatime) {
 			move(this, &state1);
 			break;
 		case static_cast<int>(EnemyMoveType::CHASE):
-			state2.p_pos = gamemanager_->player_->pos_;
-			state2.en_pos = pos_;
+			state2.p_pos = player->pos_;
 			move = &Enemy::MoveChase;
 			move(this, &state2);
 			break;
 		case static_cast<int>(EnemyMoveType::FIXED):
 			state3.delta_time = deltatime;
-			state3.en_pos = pos_;
-			state3.p_pos = gamemanager_->player_->pos_;
+			state3.p_pos = player->pos_;
 			move = &Enemy::MoveFixed;
 			move(this, &state3);
 			break;
@@ -221,29 +273,25 @@ void Enemy::Update(float deltatime) {
 			move(this, &state5);
 			break;
 		case static_cast<int>(EnemyMoveType::ACCELERATION):
-			state6.p_pos = gamemanager_->player_->pos_;
-			state6.en_pos = pos_;
+			state6.p_pos = player->pos_;
 			move = &Enemy::MoveAcceleration;
 			move(this, &state6);
 			break;
 		case static_cast<int>(EnemyMoveType::BOSS):
 			stateboss.delta_time = deltatime;
-			stateboss.en_pos = pos_;
-			stateboss.p_pos = gamemanager_->player_->pos_;
+			stateboss.p_pos = player->pos_;
 			move = &Enemy::MoveBoss;
 			move(this, &stateboss);
 			break;
 		case static_cast<int>(EnemyMoveType::CHILD):
 			stateC.delta_time = deltatime;
-			stateC.p_pos = gamemanager_->player_->pos_;
-			stateC.en_pos = pos_;
+			stateC.p_pos = player->pos_;
 			move = &Enemy::MoveChild;
 			move(this, &stateC);
 			break;
 		case static_cast<int>(EnemyMoveType::CHILD2):
 			stateC.delta_time = deltatime;
-			stateC.p_pos = gamemanager_->player_->pos_;
-			stateC.en_pos = pos_;
+			stateC.p_pos = player->pos_;
 			move = &Enemy::MoveChild2;
 			move(this, &stateC);
 			break;
@@ -253,6 +301,8 @@ void Enemy::Update(float deltatime) {
 	}
 }
 
+//-----------------------------------render-----------------------------------
+
 void Enemy::Render(Camera* camera) {
 	if (b_render) {
 		//enemyanimetion();
@@ -261,18 +311,18 @@ void Enemy::Render(Camera* camera) {
 		int x2 = pos_.x + (size_w >> 1);
 		int y2 = pos_.y + (size_h >> 1);
 
-		x1 = x1 - camera->pos_.x + (GameManager::SCREEN_W >> 1);
-		x2 = x2 - camera->pos_.x + (GameManager::SCREEN_W >> 1);
-		y1 = y1 - camera->pos_.y + (GameManager::SCREEN_H >> 1);
-		y2 = y2 - camera->pos_.y + (GameManager::SCREEN_H >> 1);
+		x1 = x1 - camera->pos_.x + GameManager::SCREEN_W_HALF;
+		x2 = x2 - camera->pos_.x + GameManager::SCREEN_W_HALF;
+		y1 = y1 - camera->pos_.y + GameManager::SCREEN_H_HALF;
+		y2 = y2 - camera->pos_.y + GameManager::SCREEN_H_HALF;
 
 		/*tnl::Vector3 pos((x1 + x2) / 2, (y1 + y2) / 2, 0);*/
 
-		time_count_++;
-		if (time_count_ == 16) {
+		anime_time_count_++;
+		if (anime_time_count_ == 16) {
 			anime_flame_++;
 			anime_flame_ %= 4;
-			time_count_ = 0;
+			anime_time_count_ = 0;
 		};
 
 		switch (type_) {
@@ -292,12 +342,10 @@ void Enemy::Render(Camera* camera) {
 			DrawRotaGraph((x1 + x2) / 2, (y1 + y2) / 2, 1.7f, 0, img_enemy4, true);
 			break;
 		case static_cast<int>(EnemyMoveType::ACCELERATION):
-			//DrawBox(x1, y1, x2, y2, -1, true);
-			DrawRotaGraph((x1 + x2) / 2, (y1 + y2) / 2, 0.45f, 0, img_enemy5, true);
+			DrawRotaGraph((x1 + x2) / 2, (y1 + y2) / 2, 0.35f, 0, img_enemy5, true);
 			break;
 		case static_cast<int>(EnemyMoveType::BOSS):
-			DrawRotaGraph((x1 + x2) / 2, (y1 + y2) / 2, 1.3f, 0, img_boss_, true);
-			//4DrawBox(x1, y1, x2, y2, -1, false);
+			DrawRotaGraph((x1 + x2) / 2, (y1 + y2) / 2, 1.25f, 0, img_boss_, true);
 			break;
 		case static_cast<int>(EnemyMoveType::CHILD):
 			DrawRotaGraph((x1 + x2) / 2, (y1 + y2) / 2, 1.0f, 1.6f, img_enemy1[anime_flame_], true);
@@ -308,6 +356,8 @@ void Enemy::Render(Camera* camera) {
 		default:
 			break;
 		}
+		//DrawBox(x1, y1, x2, y2, GetColor(0, 100, 100), false);
 	}
-	gift_pos_ = { pos_.x - camera->pos_.x + (GameManager::SCREEN_W >> 1),pos_.y - camera->pos_.y + (GameManager::SCREEN_H >> 1),0 };
+	//effectに渡す座標
+	gift_pos_ = { pos_.x - camera->pos_.x + GameManager::SCREEN_W_HALF,pos_.y - camera->pos_.y + GameManager::SCREEN_H_HALF,0 };
 }

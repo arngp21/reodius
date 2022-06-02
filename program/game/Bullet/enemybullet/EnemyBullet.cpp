@@ -10,18 +10,19 @@ EnemyBullet::EnemyBullet(tnl::Vector3 start_pos, tnl::Vector3 dir) {  // move_di
 }
 
 void EnemyBullet::Update(float deltatime) {
-
+	//player‚Ì•ûŒü‚É”ò‚Ô
 	pos_ += move_dir_ * 5;
-	if (pos_.x > (gamemanager_->camera_.pos_.x + (gamemanager_->SCREEN_W >> 1)) ||
-		(pos_.x < (gamemanager_->camera_.pos_.x - (gamemanager_->SCREEN_W >> 1))) ||
-		(pos_.y > (gamemanager_->camera_.pos_.y + (gamemanager_->SCREEN_H >> 1))) ||
-		(pos_.y < (gamemanager_->camera_.pos_.y - (gamemanager_->SCREEN_H >> 1)))) {
+	//‰æ–ÊŠO‚©‚ço‚½‚çŽ€‚Ê
+	if (pos_.x > (gamemanager_->camera_.pos_.x + (GameManager::SCREEN_W_HALF)) ||
+		(pos_.x < (gamemanager_->camera_.pos_.x - (GameManager::SCREEN_W_HALF))) ||
+		(pos_.y > (gamemanager_->camera_.pos_.y + (GameManager::SCREEN_H_HALF) - 70)) ||
+		(pos_.y < (gamemanager_->camera_.pos_.y - (GameManager::SCREEN_H_HALF)))) {
 		is_alive_ = false;
 	}
 }
 
 void EnemyBullet::Render(Camera* camera) {
-	int x = pos_.x - camera->pos_.x + (GameManager::SCREEN_W >> 1);
-	int y = pos_.y - camera->pos_.y + (GameManager::SCREEN_H >> 1);
+	int x = pos_.x - camera->pos_.x + (GameManager::SCREEN_W_HALF);
+	int y = pos_.y - camera->pos_.y + (GameManager::SCREEN_H_HALF);
 	DrawRotaGraph(x, y, 1.5f, 0, img_bullet_, true);
 }

@@ -22,40 +22,43 @@ void Icon::IconChoice() {
 		gamemanager_->Item_count_ = -1;
 	}
 	else if (type_ == static_cast<int>(IconType::LASER)) {
-		if (gamemanager_->bullet_type != gamemanager_->LASER) {
-			gamemanager_->bullet_type = gamemanager_->LASER;
+		if (gamemanager_->bullet_type_ != static_cast<int>(GameManager::BULLETTYPE::LASER)) {
+			gamemanager_->bullet_type_ = static_cast<int>(GameManager::BULLETTYPE::LASER);
 			gamemanager_->Item_count_ = -1;
 		}
 	}
 	else if (type_ == static_cast<int>(IconType::SHOTGUN)) {
-		if (gamemanager_->bullet_type != gamemanager_->SHOTGUN) {
-			gamemanager_->bullet_type = gamemanager_->SHOTGUN;
+		if (gamemanager_->bullet_type_ != static_cast<int>(GameManager::BULLETTYPE::SHOTGUN)) {
+			gamemanager_->bullet_type_ = static_cast<int>(GameManager::BULLETTYPE::SHOTGUN);
 			gamemanager_->Item_count_ = -1;
 		}
 	}
 	else if (type_ == static_cast<int>(IconType::AROUND)) {
-		if (gamemanager_->bullet_type != gamemanager_->AROUND) {
-			gamemanager_->bullet_type = gamemanager_->AROUND;
+		if (gamemanager_->bullet_type_ != static_cast<int>(GameManager::BULLETTYPE::AROUND)) {
+			gamemanager_->bullet_type_ = static_cast<int>(GameManager::BULLETTYPE::AROUND);
 			gamemanager_->Item_count_ = -1;
 		}
 	}
 	else if (type_ == static_cast<int>(IconType::BOM)) {
-		gamemanager_->skillmanager_->CreateSkill(player_->pos_, 0);
+		gamemanager_->skillmanager_->CreateSkill(player_->pos_, static_cast<int>(GameManager::SkillType::BOM));
 		gamemanager_->Item_count_ = -1;
 	}
 	else if (type_ == static_cast<int>(IconType::BARRIER)) {
-		if (!barrier_alive) {
-			gamemanager_->skillmanager_->CreateSkill(player_->pos_, 1);
+		if (!b_barrier_alive) {
+			gamemanager_->skillmanager_->CreateSkill(player_->pos_, static_cast<int>(GameManager::SkillType::BARRIER));
 			gamemanager_->Item_count_ = -1;
-			barrier_alive = true;
+			b_barrier_alive = true;
 		}
 		/*for (auto skill : skill_->skills) {
 			if(skill->type_ == static_cast<int>(skill->SkillType::BARRIER))
 		}*/
 	}
 	else if (type_ == static_cast<int>(IconType::OPTION)) {
-		gamemanager_->skillmanager_->CreateSkill(player_->pos_, 2);
-		gamemanager_->Item_count_ = -1;
+		if (!b_option_alive) {
+			gamemanager_->skillmanager_->CreateSkill(player_->pos_, static_cast<int>(GameManager::SkillType::OPTION));
+			gamemanager_->Item_count_ = -1;
+			b_option_alive = true;
+		}
 	}
 }
 
@@ -72,23 +75,21 @@ void Icon::Render(Camera* camera) {
 		DrawStringEx(pos_.x - 40, pos_.y - 10, -1, "SPEED_UP");
 	}
 	else if (type_ == static_cast<int>(IconType::LASER)) {
-		if (gamemanager_->bullet_type != gamemanager_->LASER)DrawStringEx(pos_.x - 25, pos_.y - 10, -1, "LASER");
+		if (gamemanager_->bullet_type_ != static_cast<int>(GameManager::BULLETTYPE::LASER))DrawStringEx(pos_.x - 25, pos_.y - 10, -1, "LASER");
 	}
 	else if (type_ == static_cast<int>(IconType::SHOTGUN)) {
-		if (gamemanager_->bullet_type != gamemanager_->SHOTGUN)DrawStringEx(pos_.x - 40, pos_.y-10, -1, "SHOTGUN");
+		if (gamemanager_->bullet_type_ != static_cast<int>(GameManager::BULLETTYPE::SHOTGUN))DrawStringEx(pos_.x - 40, pos_.y-10, -1, "SHOTGUN");
 	}
 	else if (type_ == static_cast<int>(IconType::AROUND)) {
-		if (gamemanager_->bullet_type != gamemanager_->AROUND)DrawStringEx(pos_.x - 30, pos_.y-10, -1, "AROUND");
+		if (gamemanager_->bullet_type_ != static_cast<int>(GameManager::BULLETTYPE::AROUND))DrawStringEx(pos_.x - 30, pos_.y-10, -1, "AROUND");
 	}
 	else if (type_ == static_cast<int>(IconType::BOM)) {
 		DrawStringEx(pos_.x - 20, pos_.y-10, -1, "BOM");
 	}
 	else if (type_ == static_cast<int>(IconType::BARRIER)) {
-		if (!barrier_alive) {
-			DrawStringEx(pos_.x - 35, pos_.y - 10, -1, "BARRIER");
-		}
+		if (!b_barrier_alive) DrawStringEx(pos_.x - 35, pos_.y - 10, -1, "BARRIER");
 	}
 	else if (type_ == static_cast<int>(IconType::OPTION)) {
-			DrawStringEx(pos_.x - 35, pos_.y - 10, -1, "OPTION");
+		if(!b_option_alive) DrawStringEx(pos_.x - 35, pos_.y - 10, -1, "OPTION");
 	}
 }

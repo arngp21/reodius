@@ -31,7 +31,7 @@ void GameManager::Initialize()
 
 	bulletmanager_ = create<BulletManager>();
 
-	player_ = std::make_shared<Player>(pl_start_pos);
+	player_ = std::make_shared<Player>(pl_start_pos_);
 	player_->initialize();
 
 	enemymanager_ = create<EnemyManager>();
@@ -39,7 +39,7 @@ void GameManager::Initialize()
 }
 
 void GameManager::InitPlay() {
-	player_ = std::make_shared<Player>(tnl::Vector3(camera_.pos_.x - (SCREEN_W >> 1) + 200, camera_.pos_.y - (SCREEN_H >> 1) + 150, 0));
+	player_ = std::make_shared<Player>(tnl::Vector3((camera_.pos_.x - SCREEN_W_HALF) - 120, SCREEN_FIRST - 10, 0));
 	player_->initialize();
 	Item_count_ = -1;
 }
@@ -127,7 +127,7 @@ void GameManager::IntersectBullet() {
 				(*bullet)->size_w,
 				(*bullet)->size_h)) {
 
-				if ((*bullet)->bullettype_ == LASER) {
+				if (bullet_type_ == static_cast<int>(BULLETTYPE::LASER)) {
 					bool is_hit = false;
 					for (auto id : (*enemy)->ID_) {
 						if (id == (*bullet)->bullet_ID_) {// “G‚ªŽ‚Á‚Ä‚¢‚éu‚·‚Å‚É“–‚½‚Á‚½’e‚ÌIDƒŠƒXƒgv‚ð‚Ý‚ÄA¡“–‚½‚Á‚½’e‚Æ“¯‚¶ID‚ª‚ ‚Á‚½‚çcontinue‚·‚é
@@ -147,20 +147,20 @@ void GameManager::IntersectBullet() {
 				else {
 					(*enemy)->hp_--;
 					(*bullet)->is_alive_ = false;
-
 				}
 
 				if ((*enemy)->hp_ == 0) {
-					(*enemy)->is_alive_ = false;
-					if((*enemy)->type_ == 8)b_boss_dead = true;
-					enemy = enemymanager_->enemys_.erase(enemy);
+					if ((*enemy)->type_ == static_cast<int>(EnemyMoveType::BOSS)) b_boss_dead = true;
+					else {
+						(*enemy)->is_alive_ = false;
+						enemy = enemymanager_->enemys_.erase(enemy);
+					}
 				}
 
-				if ((*bullet)->bullettype_ != LASER && bullet != bulletmanager_->bullets_.end()) {
+				if (bullet_type_ != static_cast<int>(BULLETTYPE::LASER) && bullet != bulletmanager_->bullets_.end()) {
 					bullet = bulletmanager_->bullets_.erase(bullet);
 					return;
 				}
-
 				is_continue = true;
 				continue;
 			}
@@ -171,54 +171,49 @@ void GameManager::IntersectBullet() {
 	}
 }
 
-void GameManager::IntersectSkill(int type) {
-	if (type == 0) {
+void GameManager::IntersectSkill(int type, Skill* call_parent) {
+	if (type == static_cast<int>(SkillType::BOM)) {
 		for (auto enemy : enemymanager_->enemys_) {
-			for (auto skill : skillmanager_->skills) {
-				if (tnl::IsIntersectRect(
-					skill->pos_,
-					skill->radius,
-					skill->radius,
-					enemy->pos_,
-					enemy->size_w,
-					enemy->size_h)) {
-					PlaySoundMem(snd_bom, DX_PLAYTYPE_BACK, true);
-					skill->OnDisplayDead();
-					skill->b_render = true;
-				}
+			if (tnl::IsIntersectRect(
+				call_parent->pos_,
+				call_parent->radius_,
+				call_parent->radius_,
+				enemy->pos_,
+				enemy->size_w,
+				enemy->size_h)) {
+				PlaySoundMem(snd_bom, DX_PLAYTYPE_BACK, true);
+				call_parent->OnDisplayDead();
+				call_parent->b_render = true;
 			}
 		}
 	}
-	else if (type == 1) {
+	else if (type == static_cast<int>(SkillType::BARRIER)) {
 		for (auto enemy : enemymanager_->enemys_) {
-			for (auto skill : skillmanager_->skills) {
-				if (tnl::IsIntersectRect(
-					skill->pos_,
-					skill->size_w,
-					skill->size_h,
-					enemy->pos_,
-					enemy->size_w,
-					enemy->size_h)) {
-					PlaySoundMem(snd_barrier, DX_PLAYTYPE_BACK, true);
-					skill->hp_--;
-					enemy->is_alive_ = false;
-				}
+			if (tnl::IsIntersectRect(
+				call_parent->pos_,
+				call_parent->size_w,
+				call_parent->size_h,
+				enemy->pos_,
+				enemy->size_w,
+				enemy->size_h)) {
+				PlaySoundMem(snd_barrier, DX_PLAYTYPE_BACK, true);
+				call_parent->hp_--;
+				enemy->is_alive_ = false;
 			}
 		}
 
 		for (auto enemy_bullet : enemymanager_->enemy_bullets_) {
-			for (auto skill: skillmanager_->skills) {
-				if (tnl::IsIntersectRect(
-					skill->pos_,
-					skill->size_w,
-					skill->size_h,
-					enemy_bullet->pos_,
-					enemy_bullet->radius_,
-					enemy_bullet->radius_)) {
-					PlaySoundMem(snd_barrier, DX_PLAYTYPE_BACK, true);
-					skill->hp_--;
-					enemy_bullet->is_alive_ = false;
-				}
+
+			if (tnl::IsIntersectRect(
+				call_parent->pos_,
+				call_parent->size_w,
+				call_parent->size_h,
+				enemy_bullet->pos_,
+				enemy_bullet->radius_,
+				enemy_bullet->radius_)) {
+				PlaySoundMem(snd_barrier, DX_PLAYTYPE_BACK, true);
+				call_parent->hp_--;
+				enemy_bullet->is_alive_ = false;
 			}
 		}
 	}
@@ -244,45 +239,45 @@ void GameManager::ObjectEraceCheck() {
 
 void GameManager::PlayerDeadMove(float deltatime) {
 	for (auto enemy : enemymanager_->enemys_) {
-		if ((camera_.pos_.x - (SCREEN_W / 2) < enemy->pos_.x) &&
-			(camera_.pos_.x + (SCREEN_W / 2) > enemy->pos_.x)) {
-			enemy->deadtype_ = PLAYER_DEATH;
+		if ((camera_.pos_.x - (SCREEN_W_HALF) < enemy->pos_.x) &&
+			(camera_.pos_.x + (SCREEN_W_HALF) > enemy->pos_.x)) {
+			enemy->deadtype_ = static_cast<int>(DeadType::PLAYER_DEATH);
 			enemy->is_alive_ = false;
 		}
 	}
 
 	for (auto enemy_bullet : enemymanager_->enemy_bullets_) {
-		if ((camera_.pos_.x - (SCREEN_W / 2) < enemy_bullet->pos_.x) &&
-			(camera_.pos_.x + (SCREEN_W / 2) > enemy_bullet->pos_.x)) {
+		if ((camera_.pos_.x - (SCREEN_W_HALF) < enemy_bullet->pos_.x) &&
+			(camera_.pos_.x + (SCREEN_W_HALF) > enemy_bullet->pos_.x)) {
 			enemy_bullet->is_alive_ = false;
 		}
 
 	}
 
 	for (auto bullet : bulletmanager_->bullets_) {
-		if ((camera_.pos_.x - (SCREEN_W / 2) < bullet->pos_.x) &&
-			(camera_.pos_.x + (SCREEN_W / 2) > bullet->pos_.x)) {
+		if ((camera_.pos_.x - (SCREEN_W_HALF) < bullet->pos_.x) &&
+			(camera_.pos_.x + (SCREEN_W_HALF) > bullet->pos_.x)) {
 			bullet->is_alive_ = false;
 		}
 	}
-	
+
 	for (auto Item : enemymanager_->enemy_drops_) {
-		if ((camera_.pos_.x - (SCREEN_W / 2) < Item->pos_.x) &&
-			(camera_.pos_.x + (SCREEN_W / 2) > Item->pos_.x)) {
+		if ((camera_.pos_.x - (SCREEN_W_HALF) < Item->pos_.x) &&
+			(camera_.pos_.x + (SCREEN_W_HALF) > Item->pos_.x)) {
 			Item->is_alive_ = false;
 		}
 	}
 
-	bullet_type = NORMAL;
+	bullet_type_ = static_cast<int>(BULLETTYPE::NORMAL);
 	p_hp_--;
 }
 
 //-----------------------------------------------------------------------------------
 
 void GameManager::IconProcessChange() {
-	if (Item_count_ > static_cast<int>(Icon::IconType::OPTION)){
-		icon[static_cast<int>(Icon::IconType::OPTION)]->blue = 255;
-		icon[static_cast<int>(Icon::IconType::OPTION)]->green = 255;
+	if (Item_count_ > ICON_MAX_NUM) {
+		icon[ICON_MAX_NUM]->blue = 255;
+		icon[ICON_MAX_NUM]->green = 255;
 		Item_count_ = 0;
 	}
 	if (Item_count_ >= 0) {
@@ -304,7 +299,7 @@ void GameManager::IconProcessChange() {
 
 void GameManager::ObjectInit() {
 	for (auto enemy : enemymanager_->enemys_) {
-		enemy->deadtype_ = PLAYER_DEATH;
+		enemy->deadtype_ = static_cast<int>(DeadType::PLAYER_DEATH);
 	}
 	objects_.clear();
 	bulletmanager_->bullets_.clear();
@@ -314,11 +309,11 @@ void GameManager::ObjectInit() {
 	Item_hoz = 0;
 	scorkeep_ = 0;
 	p_hp_ = 3;
-	b_start_player = false;
+	b_player_move_start = false;
 	b_camera_stop = true;
 	b_boss_dead = false;
 	camera_.pos_ = { 0,0,0 };
-	bullet_type = NORMAL;
+	bullet_type_ = static_cast<int>(BULLETTYPE::NORMAL);
 }
 
 //------------------------Update-----Render---------------------------------------------

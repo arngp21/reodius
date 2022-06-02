@@ -3,7 +3,7 @@
 #include"../../gamesystem/Effect.h"
 
 //“G‚ªŽ€‚ñ‚¾Žž‚Ì“®‚«
-enum DeadType {
+enum class DeadType {
 	PLAYER_DEATH,
 	BULLET_HIT_DEATH,
 	ENEMY_SCREEN_OUT,
@@ -15,10 +15,10 @@ public:
 
 class EnemyStatus : public Object{
 public:
-	DeadType deadtype_ = BULLET_HIT_DEATH;
+	int deadtype_ = static_cast<int>(DeadType::BULLET_HIT_DEATH);
 
 	int hp_;
-	bool b_ondisplay = false;
+	bool b_ondisplay_ = false;
 
 	std::shared_ptr<Effect> effect_;
 
@@ -40,13 +40,11 @@ public:
 class Enemy2MoveState : public EnemyMoveStateBase {
 public:
 	tnl::Vector3 p_pos;
-	tnl::Vector3 en_pos;
 };
 
 class Enemy3MoveState : public EnemyMoveStateBase {
 public:
 	tnl::Vector3 p_pos;
-	tnl::Vector3 en_pos;
 	float delta_time;
 };
 
@@ -63,19 +61,16 @@ public:
 class Enemy6MoveState : public EnemyMoveStateBase {
 public:
 	tnl::Vector3 p_pos;
-	tnl::Vector3 en_pos;
 };
 
 class EnemyChild : public EnemyMoveStateBase {
 public:
 	tnl::Vector3 p_pos;
-	tnl::Vector3 en_pos;
 	float delta_time;
 };
 
 class EnemyBoss : public EnemyMoveStateBase {
 public:
 	tnl::Vector3 p_pos;
-	tnl::Vector3 en_pos;
 	float delta_time;
 };

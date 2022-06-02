@@ -7,7 +7,7 @@ extern GameManager* gamemanager_;
 
 EnemyManager::EnemyManager() {
 	loadEnemy = tnl::LoadCsv("csv/LoadEnemy.csv");
-
+	//csvloadとcreateをゲーム開始時に
 	for (int i = 3; i < loadEnemy.size(); ++i) {
 
 		//[0] = ID:[1] = type:[2] = 名前:[3] = pos.x:[4] = pos.y:[5] = size_w:[6] = size_h:[7] = 生成数:[8] = 行動タイプ:[9] = speed:[10] = hp
@@ -31,8 +31,8 @@ EnemyManager::EnemyManager() {
 
 void EnemyManager::OnDisplyRender() {
 	for (auto en_render : enemys_) {
-		if (gamemanager_->camera_.pos_.x + (gamemanager_->SCREEN_W / 2) > en_render->pos_.x) {
-			en_render->b_ondisplay = true;
+		if (gamemanager_->camera_.pos_.x + GameManager::SCREEN_W_HALF > (en_render->pos_.x - (en_render->size_w >> 1))) {
+			en_render->b_ondisplay_ = true;
 			en_render->b_render = true;
 		}
 	}
@@ -40,8 +40,8 @@ void EnemyManager::OnDisplyRender() {
 
 void EnemyManager::ScreenOut() {
 	for (auto enemy : enemys_) {
-		if (enemy->pos_.x < (gamemanager_->camera_.pos_.x - (gamemanager_->SCREEN_W / 2))) {
-			enemy->deadtype_ = ENEMY_SCREEN_OUT;
+		if (enemy->pos_.x < (gamemanager_->camera_.pos_.x - GameManager::SCREEN_W_HALF)) {
+			enemy->deadtype_ = static_cast<int>(DeadType::ENEMY_SCREEN_OUT);
 			enemy->is_alive_ = false;
 		}
 	}
@@ -83,6 +83,7 @@ void EnemyManager::CreateChildEnemy(const int pos_x, const int pos_y,int cre_typ
 }
 
 void EnemyManager::EnemyErase() {
+	//bullet,enemy,coinのerase
 	{
 		auto it = enemys_.begin();
 		while (it != enemys_.end()) {
@@ -118,8 +119,10 @@ void EnemyManager::EnemyErase() {
 }
 
 void EnemyManager::Update(float deltatime) {
+
 	OnDisplyRender();
 	ScreenOut();
+	
 	EnemyErase();
 }
 

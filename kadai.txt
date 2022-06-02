@@ -1,9 +1,5 @@
 gameoverとclearの完成
 エフェクトの改善
-aroundの修正
 エフェクトがはじけ飛ぶ
-敵の位置、数調整
-bossの調整
 障害物追加
-optionの調整
 

@@ -19,6 +19,9 @@ public:
 	//画面サイズ（固定）
 	static constexpr int SCREEN_W = 1024;
 	static constexpr int SCREEN_H = 768;
+	static constexpr int SCREEN_W_HALF = SCREEN_W >> 1;
+	static constexpr int SCREEN_H_HALF = SCREEN_H >> 1;
+	static constexpr int SCREEN_FIRST = 0;
 
 	//テンプレート。shared_ptrでのemplace_back//引数なしのコンストラクタ用
 	template <class C >
@@ -48,22 +51,40 @@ public:
 	//~GameManager();
 
 	//-------------------------------------------------------------------
-	//弾の種類()
-	enum BULLET_TYPE {
+	//bullet
+	enum class BULLETTYPE {
 		NORMAL,//ノーマル
 		LASER,//レーザー
 		SHOTGUN,//ショットガン
 		AROUND,//衛星弾
 	};
-	BULLET_TYPE bullet_type = NORMAL;
+	int bullet_type_ = static_cast<int>(BULLETTYPE::NORMAL);
 
 	//------------------------------------------------------------------
+	//skill
+	enum class SkillType {
+		BOM,
+		BARRIER,
+		OPTION
+	};
+
+	//-----------------------------------------------------------------
+	//icon
+	enum class IconType {
+		SPEED,
+		LASER,
+		SHOTGUN,
+		AROUND,
+		BOM,
+		BARRIER,
+		OPTION
+	};
 
 	const float camera_speed_ = 1.5f;//スクロール速度
 	Camera camera_;
 
 	int p_hp_ = 3;//プレイヤーのHP//playerはdeleteされるのでここに書く()
-	tnl::Vector3 pl_start_pos = { 0,300,0 };
+	tnl::Vector3 pl_start_pos_ = { 0,300,0 };
 	std::shared_ptr<Player> player_ = nullptr;
 	inline std::shared_ptr<Player> GetPlayer(){
 		return player_;
@@ -71,6 +92,7 @@ public:
 	void InitPlay();
 
 	int Item_count_ = -1;
+	const int ICON_MAX_NUM = 6;
 	int Item_hoz = 0;
 
 	std::vector<std::shared_ptr<Icon>> icon;
@@ -81,8 +103,8 @@ public:
 		return enemymanager_;
 	}
 
-	tnl::Vector3 bk_start_pos1 = { SCREEN_W >> 1,((SCREEN_H >> 1) - 70),0 };
-	tnl::Vector3 bk_start_pos2 = { 1536, ((SCREEN_H >> 1) - 70), 0 };
+	tnl::Vector3 bk_start_pos1 = { SCREEN_W_HALF ,(SCREEN_H_HALF - 70),0 };//背景の初期座用
+	tnl::Vector3 bk_start_pos2 = { (SCREEN_W + SCREEN_W_HALF), (SCREEN_H_HALF - 70), 0 };
 	std::shared_ptr<BackGraund> backgraund_[2] = { nullptr,nullptr };
 	inline std::shared_ptr<BackGraund> GetBackGraund(int type){
 		if (type == 0) {
@@ -108,10 +130,10 @@ public:
 	int scorkeep_ = 0;
 
 	//---------------------------------------------------------------------
-	bool b_start_player = false;
-	bool b_camera_stop = true;
+	bool b_player_move_start = false;//タイトル画面でplayerが動かないように
+	bool b_camera_stop = true;//bossが出てきたときにカメラが止まるように
 	bool b_boss_dead = false;
-
+	bool b_clear_change = false;
 	//---------------------------------------------------------------------
 	//一回画像をロードしたら使いまわしができる関数
 
@@ -125,10 +147,10 @@ public:
 	//敵とplayerの弾
 	void IntersectBullet();
 	//skillと敵の当たり判定
-	void IntersectSkill(int type);
+	void IntersectSkill(int type,Skill* call_parent);
 
 	//---------------------------------------------------------------------------------
-	//ゲーム開始時に行うinit関数
+	//ゲーム開始時に行う初期化関数
 	void Initialize();
 	//playerが死んだとき画面内のオブジェクトを消す
 	void PlayerDeadMove(float deltatime);

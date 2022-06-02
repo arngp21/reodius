@@ -16,10 +16,10 @@ public:
 
 	std::string imgname;
 	std::vector<std::vector<std::string>> loadBullet;
-
-	void CreateBullet(const int type, const tnl::Vector3 start_pos, bulletmove desc);
-
-	void BulletErase();//is_alive_‚ªfalse‚É‚È‚Á‚½‚çlist‚©‚çíœ
+	//bullet¶¬
+	void CreateBullet(const int type, const tnl::Vector3 start_pos, bulletmove desc, std::shared_ptr<Object> parent);
+	//is_alive_‚ªfalse‚É‚È‚Á‚½‚çlist‚©‚çíœ
+	void BulletErase();
 
 	void Update(float deltatime) override;
 	void Render(Camera* camera) override;

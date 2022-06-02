@@ -21,7 +21,8 @@ public:
 	int red = 255;
 	int blue = 255;
 	int green = 255;
-	bool barrier_alive = false;
+	bool b_barrier_alive = false;
+	bool b_option_alive = false;
 
 private:
 	int img = 0;
